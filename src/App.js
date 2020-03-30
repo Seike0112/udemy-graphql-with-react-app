@@ -1,16 +1,37 @@
-import React from 'react';
+import React, { Component } from 'react';
+import { ApolloProvider } from 'react-apollo';
+import gql from 'graphql-tag'
+import { Query } from 'react-apollo'
+import client from './client';
 
-//　環境変数で定義したアクセストークンを認識させる
-const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN
+const ME = gql`
+  query me {
+    user(login: "iteachonudemy") {
+      name
+      avatarUrl
+    }
+  }
+`
+class App extends Component {
+  render() {
+    return (
+      <ApolloProvider client={client}>
+        <div>
+          Hello, GraphQL
+        </div>
+        <Query query={ME}>
+          {
+            ({ loading, error, data }) => {
+              if (loading) return 'Loading...'
+              if (error) return `Error! ${error.message}`
 
-console.log({ GITHUB_TOKEN })
-
-function App() {
-  return (
-    <>
-      Hello, GraphQL
-    </>
-  );
+              return <div>{data.user.name}</div>
+            }
+          }
+        </Query>
+      </ApolloProvider>
+    );
+  }
 }
 
 export default App;
