@@ -5,10 +5,11 @@ import client from './client';
 // import { ME } from './graphql'
 import { SEARCH_REPOSITORYS } from './graphql'
 
+const PER_PAGE = 5
 const DEFAULT_VARIABLES = {
   after: null,
   before: null,
-  first: 5,
+  first: PER_PAGE,
   last: null,
   query: "フロントエンドエンジニア"
 }
@@ -27,6 +28,15 @@ class App extends Component {
     this.setState({
       ...DEFAULT_VARIABLES,
       query: e.target.value
+    })
+  }
+
+  goNext(search) {
+    this.setState({
+      first: PER_PAGE,
+      after: search.pageInfo.endCursor,
+      last: null,
+      before: null
     })
   }
 
@@ -59,12 +69,24 @@ class App extends Component {
                         const node = edge.node
                         return (
                           <li key={index}>
-                            <a href={node.url} target="_blank">{node.name}</a>
+                            <a href={node.url} target="_blank" rel="noopener noreferrer" >{node.name}</a>
                           </li>
                         )
                       })
                     }
                   </ul>
+
+                  {
+                    search.pageInfo.hasNextPage === true ?
+                      <button
+                        onClick={this.goNext.bind(this, search)}
+                      >
+                        Next
+                      </button>
+                      :
+                      null
+                  }
+
                 </React.Fragment>
               )
             }
