@@ -5,7 +5,7 @@ import client from './client';
 // import { ME } from './graphql'
 import { SEARCH_REPOSITORYS } from './graphql'
 
-const VARIABLES = {
+const DEFAULT_VARIABLES = {
   after: null,
   before: null,
   first: 5,
@@ -14,9 +14,20 @@ const VARIABLES = {
 }
 
 class App extends Component {
+
+  //初期化メソッド
   constructor(props) {
     super(props)
-    this.state = VARIABLES
+    this.state = DEFAULT_VARIABLES
+
+    this.handleChange = this.handleChange.bind(this)
+  }
+
+  handleChange(e) {
+    this.setState({
+      ...DEFAULT_VARIABLES,
+      query: e.target.value
+    })
   }
 
   render() {
@@ -24,6 +35,9 @@ class App extends Component {
 
     return (
       <ApolloProvider client={client}>
+        <form>
+          <input value={query} onChange={this.handleChange} />
+        </form>
         <Query query={SEARCH_REPOSITORYS}
           variables={{ query, first, last, before, after }}
         >
@@ -32,7 +46,7 @@ class App extends Component {
               if (loading) return 'Loading...'
               if (error) return `Error! ${error.message}`
 
-              console.log({ data })
+              console.log({ query })
               return <div></div>
             }
           }
